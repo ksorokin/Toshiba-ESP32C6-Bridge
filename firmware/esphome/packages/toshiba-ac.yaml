@@ -18,8 +18,9 @@ external_components:
   - source:
       type: git
       url: https://github.com/ksorokin/esphome_toshiba_suzumi
-      ref: off-timer
+      ref: off-timer   # our fork until the OFF timer PR is merged upstream
     components: [toshiba_suzumi]
+    refresh: 10min
 
 # XIAO ESP32-C6 RF switch: GPIO3 low powers it, GPIO14 low selects the onboard antenna.
 switch:

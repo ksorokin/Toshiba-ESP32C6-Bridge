@@ -1,0 +1,79 @@
+# Shared firmware for the Toshiba x ESP32-C6 UART bridge (XIAO ESP32-C6 on the AC's CN22 port).
+#
+# A device file gives the name, API key and Wi-Fi, includes this package, and extends the climate
+# (id: toshiba_ac) with whatever its model actually reports. Only features every tested unit
+# supports live here, so no entity stays "unknown". See ../toshiba-ac-device.example.yaml.
+
+esp32:
+  board: seeed_xiao_esp32c6
+  variant: esp32c6
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO   # include toshiba-ac-debug.yaml while bringing up a new unit
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ksorokin/esphome_toshiba_suzumi
+      ref: off-timer
+    components: [toshiba_suzumi]
+
+# XIAO ESP32-C6 RF switch: GPIO3 low powers it, GPIO14 low selects the onboard antenna.
+switch:
+  - platform: gpio
+    id: rf_switch_power
+    pin: { number: GPIO3, inverted: true }
+    restore_mode: ALWAYS_ON
+    internal: true
+  - platform: gpio
+    id: rf_antenna_select
+    pin: GPIO14
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+status_led:
+  pin: { number: GPIO15, inverted: true, ignore_strapping_warning: true }
+
+uart:
+  - id: ac_uart
+    tx_pin: GPIO1   # XIAO D1 -> bridge X1 pin 1 -> AC RX (CN22 pin 1)
+    rx_pin: GPIO0   # XIAO D0 <- bridge X1 pin 4 <- AC TX (CN22 pin 4)
+    baud_rate: 9600
+    parity: EVEN
+
+climate:
+  - platform: toshiba_suzumi
+    id: toshiba_ac
+    name: None        # the climate entity takes the device's friendly name
+    uart_id: ac_uart
+    outdoor_temp:
+      name: "Outdoor temperature"
+    power_select:
+      name: "Power level"
+    vertical_air_direction:
+      name: "Louver"
+
+button:
+  - platform: restart
+    name: "Restart"
+  - platform: template
+    name: "Scan registers"      # logs every register the unit answers; for testing new models
+    entity_category: diagnostic
+    disabled_by_default: true
+    on_press:
+      - lambda: static_cast<toshiba_suzumi::ToshibaClimateUart*>(id(toshiba_ac))->scan();
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+
+sensor:
+  - platform: wifi_signal
+    name: "Wi-Fi signal"
+    update_interval: 60s
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 60s

@@ -1,0 +1,14 @@
+# Bring-up helper: debug logging plus every UART byte (">>>" sent, "<<<" received).
+# Include next to toshiba-ac.yaml while testing a new unit, then remove it.
+logger:
+  level: DEBUG
+
+uart:
+  - id: !extend ac_uart
+    debug:
+      direction: BOTH
+      dummy_receiver: false
+      after:
+        timeout: 50ms
+      sequence:
+        - lambda: UARTDebug::log_hex(direction, bytes, ' ');

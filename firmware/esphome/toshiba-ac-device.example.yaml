@@ -1,0 +1,39 @@
+# One file per AC, kept in the ESPHome Device Builder. Everything shared comes from the package.
+substitutions:
+  name: toshiba-ac-living-room
+  friendly_name: Living room AC
+
+packages:
+  toshiba_ac: github://ksorokin/Toshiba-ESP32C6-Bridge/firmware/esphome/packages/toshiba-ac.yaml@main
+  # debug: github://ksorokin/Toshiba-ESP32C6-Bridge/firmware/esphome/packages/toshiba-ac-debug.yaml@main
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+api:
+  encryption:
+    key: !secret toshiba_ac_living_room_api_key
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: ${name}
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+# Model-specific features: only add what this unit answers (check with "Scan registers").
+climate:
+  - id: !extend toshiba_ac
+    self_clean:
+      name: "Self clean"
+    off_timer:
+      name: "Off timer"
+    off_timer_remaining:
+      name: "Off timer remaining"
+    # supported_presets: ["Standard", "Hi POWER", "ECO"]   # only if the unit acts on 0xF7

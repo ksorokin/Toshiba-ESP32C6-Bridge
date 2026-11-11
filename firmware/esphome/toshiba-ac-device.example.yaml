@@ -4,8 +4,13 @@ substitutions:
   friendly_name: Living room AC
 
 packages:
-  toshiba_ac: github://ksorokin/Toshiba-ESP32C6-Bridge/firmware/esphome/packages/toshiba-ac.yaml@main
-  # debug: github://ksorokin/Toshiba-ESP32C6-Bridge/firmware/esphome/packages/toshiba-ac-debug.yaml@main
+  toshiba_ac:
+    url: https://github.com/ksorokin/Toshiba-ESP32C6-Bridge
+    ref: main
+    files:
+      - firmware/esphome/packages/toshiba-ac.yaml
+      # - firmware/esphome/packages/toshiba-ac-debug.yaml   # while bringing up a new unit
+    refresh: 10min   # the default (1d) would keep using a stale package after a fix
 
 esphome:
   name: ${name}

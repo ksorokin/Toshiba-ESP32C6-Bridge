@@ -53,8 +53,8 @@ climate:
       name: "Outdoor temperature"
     power_select:
       name: "Power level"
-    vertical_air_direction:
-      name: "Louver"
+    # Swing on/off is part of the climate entity. Fixed louver positions (vertical_air_direction)
+    # are opt-in per device: the Mirai RAS-13BKV-E ignores them.
 
 button:
   - platform: restart

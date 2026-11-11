@@ -36,4 +36,6 @@ climate:
       name: "Off timer"
     off_timer_remaining:
       name: "Off timer remaining"
+    # vertical_air_direction:   # only if the unit moves the flaps to Top ... Bottom
+    #   name: "Louver"
     # supported_presets: ["Standard", "Hi POWER", "ECO"]   # only if the unit acts on 0xF7

@@ -1,8 +1,8 @@
 # Shared firmware for the Toshiba x ESP32-C6 UART bridge (XIAO ESP32-C6 on the AC's CN22 port).
 #
-# A device file gives the name, API key and Wi-Fi, includes this package, and extends the climate
-# (id: toshiba_ac) with whatever its model actually reports. Only features every tested unit
-# supports live here, so no entity stays "unknown". See ../toshiba-ac-device.example.yaml.
+# A device file gives the name, API key and Wi-Fi and includes this package. The component detects
+# what the unit supports and adds those entities itself (auto_detect); a device file extends the
+# climate (id: toshiba_ac) only to name an entity or force one on. See ../toshiba-ac-device.example.yaml.
 
 esp32:
   board: seeed_xiao_esp32c6
@@ -18,7 +18,7 @@ external_components:
   - source:
       type: git
       url: https://github.com/pedobry/esphome_toshiba_suzumi
-      ref: 74b27e497e907ed2f041a9d1b5385116cdb63c56   # upstream main 2026-11-11 (includes the OFF timer); bump deliberately after reading the diff
+      ref: d3f057fdf4139ec5da168206955ca4d7f657e7a6   # upstream main 2026-11-18 (ESPHome 2026.11 fix, feature auto-detection); bump deliberately after reading the diff
     components: [toshiba_suzumi]
 
 # XIAO ESP32-C6 RF switch: GPIO3 low powers it, GPIO14 low selects the onboard antenna.
@@ -59,12 +59,6 @@ climate:
 button:
   - platform: restart
     name: "Restart"
-  - platform: template
-    name: "Scan registers"      # logs every register the unit answers; for testing new models
-    entity_category: diagnostic
-    disabled_by_default: true
-    on_press:
-      - lambda: static_cast<toshiba_suzumi::ToshibaClimateUart*>(id(toshiba_ac))->scan();
 
 binary_sensor:
   - platform: status
